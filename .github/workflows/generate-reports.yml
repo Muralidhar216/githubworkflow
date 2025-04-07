@@ -37,4 +37,4 @@ jobs:
           git config --global user.name "github-actions"
           git add excelreports/
           git commit -m "Add Excel report $(date)" || echo "No changes"
-          git push --u origin main
+          git push
