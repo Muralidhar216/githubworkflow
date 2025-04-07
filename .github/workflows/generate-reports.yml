@@ -1,6 +1,9 @@
 name: Generate and Save Reports
 
 on:
+  push:
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
