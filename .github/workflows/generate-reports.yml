@@ -34,9 +34,19 @@ jobs:
       - name: Commit and push Excel report
         run: |
           git config --global user.email "github-actions@github.com"
-          git config --global user.name "github-actions"
+          git config --global user.name "GitHub Actions"
+      
+          # Stash local changes to avoid rebase error
+          git stash
+      
+          # Pull latest changes from remote
           git pull origin main --rebase
-          git add excelreports/
-          git commit -m "Add Excel report $(date)" || echo "No changes"
+      
+          # Re-apply the stashed changes
+          git stash pop || echo "Nothing to pop"
+      
+          git add excelreports/ htmlreports/
+          git commit -m "Add reports $(date)" || echo "No changes"
           git push
+
 
