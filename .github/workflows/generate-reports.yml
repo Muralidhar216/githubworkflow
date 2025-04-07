@@ -1,12 +1,14 @@
-name: Generate Reports Only
+name: Generate and Save Reports
 
 on:
-  push:
-    branches: [main]
+  workflow_dispatch:
 
 jobs:
-  report:
+  generate:
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout code
@@ -23,9 +25,15 @@ jobs:
       - name: Generate reports
         run: python generate_reports.py
 
-      - name: List created files
+      - name: Commit and push reports
         run: |
-          echo "📝 HTML files:"
-          ls -l htmlreports/
-          echo "📊 Excel files:"
-          ls -l excelreports/
+          git config --global user.email "github-actions@github.com"
+          git config --global user.name "GitHub Actions"
+          git add htmlreports/ excelreports/
+          git commit -m "Add generated reports $(date)" || echo "No changes to commit"
+          git push
+
+      - name: List saved files
+        run: |
+          echo "HTML Reports:" && ls -l htmlreports/
+          echo "Excel Reports:" && ls -l excelreports/
