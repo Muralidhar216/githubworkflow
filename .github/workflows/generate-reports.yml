@@ -1,35 +1,31 @@
-name: Generate Reports
+name: Generate Reports Only
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
 
 jobs:
-  generate:
+  report:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.10'
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.7'
 
-    - name: Install dependencies
-      run: |
-        pip install -r requirements.txt
+      - name: Install dependencies
+        run: pip install -r requirements.txt
 
-    - name: Run report generator
-      run: |
-        python generate_reports.py
+      - name: Generate reports
+        run: python generate_reports.py
 
-    - name: Upload generated reports
-      uses: actions/upload-artifact@v4
-      with:
-        name: reports
-        path: |
-          htmlreports/
-          excelreports/
+      - name: List created files
+        run: |
+          echo "📝 HTML files:"
+          ls -l htmlreports/
+          echo "📊 Excel files:"
+          ls -l excelreports/

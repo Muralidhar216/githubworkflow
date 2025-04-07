@@ -1,56 +1,32 @@
 import os
-from openpyxl import Workbook
 import datetime
+from openpyxl import Workbook
 
-# Sample HTML content
-def save_html_report(owner):
-    html_content = f"""
-    <!DOCTYPE html>
-    <html>
-    <head><title>Report</title></head>
-    <body>
-        <h1>Report for {owner}</h1>
-        <button onclick="alert('Filename: {owner}.html')">Show Filename</button>
-    </body>
-    </html>
-    """
-    folder = "htmlreports"
-    os.makedirs(folder, exist_ok=True)
-    filename = f"{owner}.html"
-    filepath = os.path.join(folder, filename)
+def create_folders():
+    os.makedirs("htmlreports", exist_ok=True)
+    os.makedirs("excelreports", exist_ok=True)
 
-    with open(filepath, "w", encoding="utf-8") as file:
-        file.write(html_content)
+def save_html(owner):
+    html_path = f"htmlreports/{owner}.html"
+    with open(html_path, "w", encoding="utf-8") as f:
+        f.write(f"<html><body><h1>Report for {owner}</h1></body></html>")
+    print(f"✅ HTML report saved to {html_path}")
 
-    print(f"HTML report saved at {filepath}")
-
-# Sample Excel content
-def save_excel_report(owner):
-    folder = "excelreports"
-    os.makedirs(folder, exist_ok=True)
-
-    headers = ["Name", "Value"]
-    data = [
-        ["Policy1", "Compliant"],
-        ["Policy2", "Non-Compliant"]
-    ]
+def save_excel(owner):
+    today = datetime.datetime.now().strftime("%Y%m%d")
+    excel_path = f"excelreports/{owner}_{today}.xlsx"
 
     wb = Workbook()
     ws = wb.active
-    ws.title = "Report"
-    ws.append(headers)
-    for row in data:
-        ws.append(row)
+    ws.title = "Sample"
+    ws.append(["Subscription NAME", "APM ID", "Compliance State"])
+    ws.append(["Test Sub", "123456", "NonCompliant"])
 
-    timestamp = datetime.datetime.now().strftime("%Y%m%d")
-    filename = f"{owner}_{timestamp}.xlsx"
-    filepath = os.path.join(folder, filename)
+    wb.save(excel_path)
+    print(f"✅ Excel report saved to {excel_path}")
 
-    wb.save(filepath)
-    print(f"Excel report saved at {filepath}")
-
-# Run both
 if __name__ == "__main__":
     owner = "test-owner"
-    save_html_report(owner)
-    save_excel_report(owner)
+    create_folders()
+    save_html(owner)
+    save_excel(owner)
