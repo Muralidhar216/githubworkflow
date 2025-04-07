@@ -41,20 +41,32 @@ def upload_html_as_blob(html_file):
     encoded = base64.b64encode(content).decode()
 
     url = f"{API_URL}/repos/{REPO}/contents/{html_file}"
+    headers = {"Authorization": f"Bearer {GITHUB_TOKEN}"}
+
+    # 🔍 Check if the file already exists (to fetch SHA)
+    get_resp = requests.get(url, headers=headers)
+    sha = None
+    if get_resp.status_code == 200:
+        sha = get_resp.json()["sha"]
+
+    # 📨 Prepare the payload with or without SHA
     data = {
-        "message": f"Add HTML report {html_file}",
+        "message": f"Add or update HTML report {html_file}",
         "content": encoded,
         "branch": BRANCH
     }
+    if sha:
+        data["sha"] = sha
 
-    headers = {"Authorization": f"Bearer {GITHUB_TOKEN}"}
-    response = requests.put(url, json=data, headers=headers)
+    # 🚀 Upload the file
+    put_resp = requests.put(url, json=data, headers=headers)
 
-    if response.status_code == 201:
+    if put_resp.status_code in [200, 201]:
         print(f"✅ Uploaded HTML to GitHub via REST API: {html_file}")
     else:
-        print(f"❌ Failed to upload HTML: {response.status_code}")
-        print(response.json())
+        print(f"❌ Failed to upload HTML: {put_resp.status_code}")
+        print(put_resp.json())
+
 
 def main():
     html = create_html(OWNER)
