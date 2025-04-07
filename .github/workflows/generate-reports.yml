@@ -1,9 +1,6 @@
-name: Generate and Save Reports
+name: Generate and Upload Reports
 
 on:
-  push:
-    branches:
-      - main
   workflow_dispatch:
 
 jobs:
@@ -11,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
 
     permissions:
-      contents: write
+      contents: write  # needed to push changes
 
     steps:
       - name: Checkout code
@@ -23,20 +20,18 @@ jobs:
           python-version: '3.10'
 
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: pip install openpyxl
 
-      - name: Generate reports
-        run: python generate_reports.py
+      - name: Run report generator
+        env:
+          GITHUB_TOKEN: ${{ secrets.G_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: python generate_and_upload.py
 
-      - name: Commit and push reports
+      - name: Commit and push Excel report
         run: |
           git config --global user.email "github-actions@github.com"
-          git config --global user.name "GitHub Actions"
-          git add htmlreports/ excelreports/
-          git commit -m "Add generated reports $(date)" || echo "No changes to commit"
+          git config --global user.name "github-actions"
+          git add excelreports/
+          git commit -m "Add Excel report $(date)" || echo "No changes"
           git push
-
-      - name: List saved files
-        run: |
-          echo "HTML Reports:" && ls -l htmlreports/
-          echo "Excel Reports:" && ls -l excelreports/
