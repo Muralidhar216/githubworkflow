@@ -41,6 +41,7 @@ def upload_html_as_blob(html_file):
     encoded = base64.b64encode(content).decode()
 
     url = f"{API_URL}/repos/{REPO}/contents/{html_file}"
+    print(url)
     headers = {"Authorization": f"Bearer {GITHUB_TOKEN}"}
 
     # 🔍 Check if the file already exists (to fetch SHA)
